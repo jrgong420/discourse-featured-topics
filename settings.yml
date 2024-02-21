@@ -1,0 +1,8 @@
+featured_tags:
+  type: list
+  list_type: tag
+  default: "featured"
+max_topic_count: 4
+randomize_topics: true
+show_on_mobile: true
+plugin_outlet: "below-site-header"
