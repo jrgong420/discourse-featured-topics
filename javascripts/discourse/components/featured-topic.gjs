@@ -2,11 +2,11 @@ import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
 import { categoryLinkHTML } from 'discourse/helpers/category-link';
 import formatDate from 'discourse/helpers/format-date';
-import { renderAvatar } from 'discourse/helpers/user-avatar';
+// import { renderAvatar } from 'discourse/helpers/user-avatar';
 
-const responsiveRatios = [1, 2, 3, 4];
-const displayHeight = 200;
-const displayWidth = 200;
+const responsiveRatios = [0.75, 1, 1.5];
+const displayHeight = 500;
+const displayWidth = 500;
 
 export default class FeaturedTopic extends Component {
   <template>
@@ -23,10 +23,10 @@ export default class FeaturedTopic extends Component {
       {{#if @topic.thumbnails}}
         <div class='featured-topic__thumbnail'>
           <img
-            src={{this.thumbnailUrl}}
-            {{!-- srcset={{this.srcset}} --}}
-            width={{displayWidth}}
-            height={{displayHeight}}
+            src={{this.fallbackSrc}}
+            srcset={{this.srcset}}
+            width={{this.width}}
+            height={{this.height}}
             loading='lazy'
             class=''
           />
@@ -58,15 +58,56 @@ export default class FeaturedTopic extends Component {
       settings.featured_tags.split('|').includes(element),
     );
   }
+
   get tagUrl() {
     return `/tag/${this.tag}`;
   }
 
-  get thumbnailUrl() {
+  get original() {
+    return this.args.topic.thumbnails[0];
+  }
+
+  get width() {
+    return this.original.width;
+  }
+
+  get height() {
+    return this.original.height;
+  }
+
+  findBest(maxWidth, maxHeight) {
     if (!this.args.topic.thumbnails) {
       return;
     }
-    // console.log(this.args.topic.thumbnails[1].url);
-    return this.args.topic.thumbnails[0].url;
+
+    const largeEnough = this.args.topic.thumbnails.filter((t) => {
+      if (!t.url) {
+        return false;
+      }
+      return t.max_width >= maxHeight;
+    });
+
+    if (largeEnough.lastObject) {
+      return largeEnough.lastObject;
+    }
+
+    return this.original;
+  }
+
+  get fallbackSrc() {
+    console.log(this.args.topic.thumbnails);
+    return this.findBest(displayWidth, displayHeight).url;
+  }
+
+  get srcset() {
+    return responsiveRatios
+      .map((ratio) => {
+        const match = this.findBest(
+          ratio * displayHeight,
+          ratio * displayWidth,
+        );
+        return `${match.url} ${ratio}x`;
+      })
+      .join(',');
   }
 }

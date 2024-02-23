@@ -1,7 +1,5 @@
 @if $layout == "cards" {
   .featured-topics {
-    &__wrapper {
-    }
     &__container {
       display: grid;
       grid-template-columns: repeat($max_topic_count, minmax(300px, 1fr));
@@ -11,7 +9,7 @@
   .featured-topic {
     &__container {
       position: relative;
-      height: 400px;
+      height: 600px;
       background-color: var(--secondary);
       box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
     }
@@ -24,7 +22,7 @@
       }
     }
     &__thumbnail {
-      height: 45%;
+      height: 75%;
       min-height: 45%;
       width: 100%;
       img {
