@@ -1,6 +1,7 @@
 import Component from '@glimmer/component';
 import { tracked } from '@glimmer/tracking';
-import { action, computed } from '@ember/object';
+import { action } from '@ember/object';
+import didInsert from '@ember/render-modifiers/modifiers/did-insert';
 import { inject as service } from '@ember/service';
 import { defaultHomepage } from 'discourse/lib/utilities';
 import FeaturedTopic from './featured-topic';
@@ -8,7 +9,6 @@ import FeaturedTopic from './featured-topic';
 export default class FeaturedTopics extends Component {
   @service router;
   @service store;
-  @service site;
   @service siteSettings;
   @tracked featuredTopics = null;
 
@@ -38,7 +38,6 @@ export default class FeaturedTopics extends Component {
         tags: this.featuredTags,
       },
     });
-
     this.featuredTopics = topicList.topics;
 
     if (settings.show_with_img_only) {
@@ -57,9 +56,7 @@ export default class FeaturedTopics extends Component {
     );
   }
 
-  @action
   shuffle(array) {
-    // https://stackoverflow.com/a/12646864
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];

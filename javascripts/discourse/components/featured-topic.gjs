@@ -1,12 +1,12 @@
 import Component from '@glimmer/component';
-import { action, computed } from '@ember/object';
 import { htmlSafe } from '@ember/template';
 import { categoryLinkHTML } from 'discourse/helpers/category-link';
 import formatDate from 'discourse/helpers/format-date';
 import { renderAvatar } from 'discourse/helpers/user-avatar';
 
-const displayHeight = 400;
-const displayWidth = 400;
+const responsiveRatios = [1, 2, 3, 4];
+const displayHeight = 200;
+const displayWidth = 200;
 
 export default class FeaturedTopic extends Component {
   <template>
@@ -35,7 +35,6 @@ export default class FeaturedTopic extends Component {
 
       <div class='featured-topic__details'>
         <h2 class='featured-topic__topic-title'>{{htmlSafe @topic.title}}</h2>
-
         <div class='topic-header'>
           <div class='category-link'>{{categoryLinkHTML @topic.category}}</div>
           <span class='topic-date'>{{formatDate
