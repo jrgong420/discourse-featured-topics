@@ -1,8 +1,9 @@
 import Component from '@glimmer/component';
 import { htmlSafe } from '@ember/template';
+import UserLink from 'discourse/components/user-link';
+import avatar from 'discourse/helpers/avatar';
 import { categoryLinkHTML } from 'discourse/helpers/category-link';
 import formatDate from 'discourse/helpers/format-date';
-// import { renderAvatar } from 'discourse/helpers/user-avatar';
 
 const responsiveRatios = [0.75, 1, 1.5];
 const displayHeight = 500;
@@ -10,7 +11,10 @@ const displayWidth = 500;
 
 export default class FeaturedTopic extends Component {
   <template>
-    <a class='featured-topic__container {{this.tag}}' href='{{this.unreadUrl}}'>
+    <a
+      class='featured-topic__container {{this.tag}} {{this.thumbnail}} '
+      href='{{this.unreadUrl}}'
+    >
 
       <div class='featured-topic__tag'>
         <a
@@ -34,13 +38,22 @@ export default class FeaturedTopic extends Component {
       {{/if}}
 
       <div class='featured-topic__details'>
-        <h2 class='featured-topic__topic-title'>{{htmlSafe @topic.title}}</h2>
-        <div class='topic-header'>
-          <div class='category-link'>{{categoryLinkHTML @topic.category}}</div>
-          <span class='topic-date'>{{formatDate
-              @topic.created_at
-              format='tiny'
-            }}</span>
+        <h2 class='topic-title'>{{htmlSafe @topic.title}}</h2>
+        <div class='category-link'>{{categoryLinkHTML @topic.category}}</div>
+        <span class='topic-date'>{{formatDate
+            @topic.created_at
+            format='tiny'
+          }}</span>
+        {{#if @topic.hasExcerpt}}
+          <div class='topic-excerpt'>
+            {{htmlSafe @topic.excerpt}}
+          </div>
+        {{/if}}
+        <div class='topic-author'>
+          <UserLink @user={{@topic.creator}}>
+            {{avatar @topic.creator imageSize='medium'}}
+            {{@topic.creator.name}}
+          </UserLink>
         </div>
       </div>
 
@@ -51,6 +64,13 @@ export default class FeaturedTopic extends Component {
     return this.args.topic.linked_post_number
       ? this.args.topic.urlForPostNumber(this.args.topic.linked_post_number)
       : this.args.topic.get('lastUnreadUrl');
+  }
+
+  get thumbnail() {
+    if (!this.args.topic.thumbnails) {
+      return;
+    }
+    return 'thumbnail';
   }
 
   get tag() {
@@ -95,7 +115,6 @@ export default class FeaturedTopic extends Component {
   }
 
   get fallbackSrc() {
-    console.log(this.args.topic.thumbnails);
     return this.findBest(displayWidth, displayHeight).url;
   }
 

@@ -13,6 +13,11 @@
       background-color: var(--secondary);
       box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
     }
+    &__container.thumbnail {
+      .topic-excerpt {
+        display: none;
+      }
+    }
     &__tag {
       position: absolute;
       top: 0.5rem;
@@ -22,7 +27,7 @@
       }
     }
     &__thumbnail {
-      height: 75%;
+      height: 15%;
       min-height: 45%;
       width: 100%;
       img {
