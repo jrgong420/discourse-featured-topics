@@ -3,5 +3,14 @@
   "license_url": "TODO: Put your theme's LICENSE URL here",
   "assets": {},
   "name": "Featured Topics",
-  "component": true
+  "component": true,
+  "modifiers": {
+    "topic_thumbnail_sizes": [
+      [375, 375],
+      [500, 500],
+      [750, 750]
+    ],
+    "serialize_topic_excerpts": true
+  },
+  "minimum_discourse_version": "3.2.0.beta3"
 }

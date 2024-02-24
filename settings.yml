@@ -2,7 +2,25 @@ featured_tags:
   type: list
   list_type: tag
   default: "featured"
+layout:
+  type: enum
+  default: "cards"
+  choices:
+    - cards
+    - list
+    - none
 max_topic_count: 4
 randomize_topics: true
+show_with_img_only: false
 show_on_mobile: true
+show_on:
+  default: homepage
+  type: enum
+  choices:
+    - everywhere
+    - homepage
+    - latest/top/new/categories
+    - latest
+    - categories
+    - top
 plugin_outlet: "below-site-header"
