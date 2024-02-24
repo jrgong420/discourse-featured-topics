@@ -15,9 +15,12 @@ export default class FeaturedTopics extends Component {
     {{#if this.showOnRoute}}
       <div class='featured-topics__wrapper {{settings.plugin_outlet}}'>
         <div class='featured-topics__container'>
-          {{#each this.featuredTopics as |topic|}}
-            <FeaturedTopic @topic={{topic}} />
-          {{/each}}
+          <h2>{{settings.heading}}</h2>
+          <div class='featured-topics__topic-wrapper'>
+            {{#each this.featuredTopics as |topic|}}
+              <FeaturedTopic @topic={{topic}} />
+            {{/each}}
+          </div>
         </div>
       </div>
     {{/if}}

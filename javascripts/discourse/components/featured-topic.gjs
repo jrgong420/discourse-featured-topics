@@ -12,11 +12,11 @@ const displayWidth = 500;
 export default class FeaturedTopic extends Component {
   <template>
     <a
-      class='featured-topic__container {{this.tag}} {{this.thumbnail}} '
+      class='featured-topics__topic-container {{this.tag}} {{this.thumbnail}} '
       href='{{this.unreadUrl}}'
     >
 
-      <div class='featured-topic__tag'>
+      <div class='featured-topics__topic-tag'>
         <a
           href={{this.tagUrl}}
           data-tag-name={{this.tag}}
@@ -25,7 +25,7 @@ export default class FeaturedTopic extends Component {
       </div>
 
       {{#if @topic.thumbnails}}
-        <div class='featured-topic__thumbnail'>
+        <div class='featured-topics__topic-thumbnail'>
           <img
             src={{this.fallbackSrc}}
             srcset={{this.srcset}}
@@ -37,7 +37,7 @@ export default class FeaturedTopic extends Component {
         </div>
       {{/if}}
 
-      <div class='featured-topic__details'>
+      <div class='featured-topics__topic-details'>
         <h2 class='topic-title'>{{htmlSafe @topic.title}}</h2>
         <div class='category-link'>{{categoryLinkHTML @topic.category}}</div>
         <span class='topic-date'>{{formatDate

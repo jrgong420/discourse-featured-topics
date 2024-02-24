@@ -1,6 +1,9 @@
 @import "cards";
 @import "list";
 
+@if $layout == "none" {
+}
+
 // Plugin outlets
 .featured-topics__wrapper.above-main-container {
   margin-bottom: 1.5rem;
