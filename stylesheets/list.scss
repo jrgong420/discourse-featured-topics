@@ -1,16 +1,11 @@
 @if $layout == "list" {
   .featured-topics {
-    &__wrapper {
-    }
-    &__container {
+    &__topic-wrapper {
       display: flex;
       flex-direction: column;
       row-gap: 1rem;
     }
-  }
-
-  .featured-topic {
-    &__container {
+    &__topic-container {
       position: relative;
       display: flex;
       background-color: var(--secondary);
@@ -18,15 +13,13 @@
       border-radius: var(--d-border-radius);
       overflow: hidden;
     }
-    &__tag {
+    &__topic-tag {
       position: absolute;
       top: 0.5rem;
       right: 0.5rem;
-      .discourse-tag {
-      }
     }
-    &__thumbnail {
-      width: 200px;
+    &__topic-thumbnail {
+      width: 350px;
       height: 200px;
       img {
         width: 100%;
@@ -34,7 +27,7 @@
         object-fit: cover;
       }
     }
-    &__details {
+    &__topic-details {
       padding: 1rem 2rem;
     }
   }

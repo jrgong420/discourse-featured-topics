@@ -1,24 +1,23 @@
 @if $layout == "cards" {
   .featured-topics {
-    &__container {
+    &__topic-wrapper {
       display: grid;
       grid-template-columns: repeat($max_topic_count, minmax(300px, 1fr));
       grid-gap: 1rem;
     }
-  }
-  .featured-topic {
-    &__container {
+
+    &__topic-container {
       position: relative;
-      height: 600px;
+      height: 400px;
       background-color: var(--secondary);
       box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
     }
-    &__container.thumbnail {
+    &__topic-container.thumbnail {
       .topic-excerpt {
         display: none;
       }
     }
-    &__tag {
+    &__topic-tag {
       position: absolute;
       top: 0.5rem;
       right: 0.5rem;
@@ -26,7 +25,7 @@
         margin-right: 0;
       }
     }
-    &__thumbnail {
+    &__topic-thumbnail {
       height: 15%;
       min-height: 45%;
       width: 100%;
@@ -36,7 +35,7 @@
         object-fit: cover;
       }
     }
-    &__details {
+    &__topic-details {
       display: flex;
       flex-direction: column;
       padding: 1rem;
