@@ -23,6 +23,8 @@ export default class FeaturedTopics extends Component {
           </div>
         </div>
       </div>
+    {{else}}
+      {{yield}}
     {{/if}}
   </template>
 
@@ -72,12 +74,13 @@ export default class FeaturedTopics extends Component {
 
   get showOnRoute() {
     const currentRoute = this.router.currentRouteName;
+    const currentURL = this.router.currentURL;
     switch (settings.show_on) {
       case 'everywhere':
         return !currentRoute.includes('admin');
       case 'homepage':
         return currentRoute === `discovery.${defaultHomepage()}`;
-      case 'latest/top/new/categories':
+      case 'top-menu':
         const topMenu = this.siteSettings.top_menu;
         const targets = topMenu.split('|').map((opt) => `discovery.${opt}`);
         return targets.includes(currentRoute);
@@ -87,6 +90,8 @@ export default class FeaturedTopics extends Component {
         return currentRoute === `discovery.categories`;
       case 'top':
         return currentRoute === `discovery.top`;
+      case 'root':
+        return currentURL === '/';
       default:
         return false;
     }

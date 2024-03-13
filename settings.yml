@@ -21,8 +21,9 @@ show_on:
   choices:
     - everywhere
     - homepage
-    - latest/top/new/categories
+    - top-menu
     - latest
     - categories
     - top
+    - root
 plugin_outlet: "below-site-header"
