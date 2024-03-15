@@ -37,9 +37,30 @@
     }
     &__topic-details {
       display: flex;
+      flex: 1 1 auto;
       flex-direction: column;
       padding: 1rem;
-      height: 100%;
+      color: var(--primary);
+      .topic-author {
+        margin-top: auto;
+      }
+      .topic-title {
+        @include line-clamp(3);
+      }
+      .topic-excerpt {
+        @include line-clamp(8);
+      }
+    }
+  }
+  @include breakpoint(mobile-extra-large) {
+    .featured-topics {
+      &__topic-wrapper {
+        display: flex;
+        flex-direction: column;
+      }
+      &__topic-container {
+        height: unset;
+      }
     }
   }
 }
