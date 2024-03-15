@@ -2,12 +2,14 @@
   .featured-topics {
     &__topic-wrapper {
       display: grid;
-      grid-template-columns: repeat($max_topic_count, minmax(300px, 1fr));
+      grid-template-columns: repeat($max_topic_count, minmax(150px, 1fr));
       grid-gap: 1rem;
     }
 
     &__topic-container {
       position: relative;
+      display: flex;
+      flex-direction: column;
       height: 400px;
       background-color: var(--secondary);
       box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
@@ -26,8 +28,7 @@
       }
     }
     &__topic-thumbnail {
-      height: 15%;
-      min-height: 45%;
+      height: 45%;
       width: 100%;
       img {
         height: 100%;
