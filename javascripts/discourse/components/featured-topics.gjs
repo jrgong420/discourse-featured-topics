@@ -69,7 +69,7 @@ export default class FeaturedTopics extends Component {
   }
 
   get featuredTags() {
-    return settings.featured_tags.replaceAll('|', ' ');
+    return settings.featured_tags.split('|');
   }
 
   get showOnRoute() {
