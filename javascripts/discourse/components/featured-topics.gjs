@@ -3,6 +3,7 @@ import { tracked } from '@glimmer/tracking';
 import { action } from '@ember/object';
 import { inject as service } from '@ember/service';
 import { defaultHomepage } from 'discourse/lib/utilities';
+import i18n from 'discourse-common/helpers/i18n';
 import FeaturedTopic from './featured-topic';
 
 export default class FeaturedTopics extends Component {
@@ -15,7 +16,9 @@ export default class FeaturedTopics extends Component {
     {{#if this.showOnRoute}}
       <div class='featured-topics__wrapper {{settings.plugin_outlet}}'>
         <div class='featured-topics__container'>
-          <h2>{{settings.heading}}</h2>
+          <h2 class='featured-topics__heading'>{{i18n
+              (themePrefix 'heading')
+            }}</h2>
           <div class='featured-topics__topic-wrapper'>
             {{#each this.featuredTopics as |topic|}}
               <FeaturedTopic @topic={{topic}} />
