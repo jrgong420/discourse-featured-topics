@@ -24,4 +24,4 @@ show_on:
     - categories
     - top
     - root
-plugin_outlet: "below-site-header"
+plugin_outlet: "above-main-container"
