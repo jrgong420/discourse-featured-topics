@@ -23,5 +23,5 @@ show_on:
     - latest
     - categories
     - top
-    - root
+    - custom
 plugin_outlet: "above-main-container"

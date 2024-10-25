@@ -77,7 +77,6 @@ export default class FeaturedTopics extends Component {
 
   get showOnRoute() {
     const currentRoute = this.router.currentRouteName;
-    const currentURL = this.router.currentURL;
     switch (settings.show_on) {
       case 'everywhere':
         return !currentRoute.includes('admin');
@@ -93,8 +92,8 @@ export default class FeaturedTopics extends Component {
         return currentRoute === `discovery.categories`;
       case 'top':
         return currentRoute === `discovery.top`;
-      case 'root':
-        return currentURL === '/';
+      case 'custom':
+        return currentRoute === `discovery.custom`;
       default:
         return false;
     }
