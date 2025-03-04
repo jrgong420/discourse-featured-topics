@@ -4,8 +4,9 @@ featured_tags:
   default: "featured"
 layout:
   type: enum
-  default: "cards"
+  default: "container"
   choices:
+    - container
     - cards
     - list
     - none

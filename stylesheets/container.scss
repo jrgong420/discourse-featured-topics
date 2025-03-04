@@ -1,0 +1,103 @@
+// Variables
+$min-card-width: 300px;
+$max-vertical-topics: 2;
+$spacing: 1rem;
+
+// Mixin
+@mixin one-row-layout($count) {
+  @container component-wrapper (min-width: #{calc(($min-card-width * $count) + ($spacing * ($count - 1)))}) {
+    .featured-topics {
+      &__topics-wrapper {
+        display: grid;
+        grid-template-columns: repeat($count, 1fr);
+        grid-template-rows: 1fr;
+        grid-auto-rows: 0;
+        column-gap: $spacing;
+        row-gap: 0;
+      }
+    }
+  }
+}
+
+// Layout
+@if $layout == "container" {
+  .featured-topics {
+    &__container {
+      container: component-wrapper / inline-size;
+    }
+    &__topics-wrapper {
+      display: flex;
+      flex-direction: column;
+      row-gap: $spacing;
+    }
+    &__topic-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--featured-topics-card-bg, var(--secondary));
+      box-shadow: var(--featured-topics-card-shadow, var(--shadow-card));
+      border-radius: var(
+        --featured-topics-card-radius,
+        var(--d-border-radius-large)
+      );
+      overflow: hidden;
+    }
+    &__topic-tag {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+    }
+    &__topic-thumbnail {
+      width: auto;
+      height: 60%;
+      max-height: 300px;
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    &__topic-details {
+      padding: var(--featured-topics-content-padding, 1rem 1.5rem);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      .topic-title {
+        @include line-clamp(2);
+        line-height: 1.25;
+      }
+      .topic-date {
+        display: none;
+      }
+      .topic-excerpt {
+        @include line-clamp(4);
+        margin: 0.75em 0;
+      }
+      .topic-author {
+        margin-top: auto;
+      }
+      .topic-author a {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+      }
+      .topic-author-name {
+        @include line-clamp(1);
+      }
+    }
+  }
+
+  // Layout for grid row showing 2+ cards
+  @for $i from 2 through 10 {
+    @include one-row-layout($i);
+  }
+
+  // Layout for flex column, limiting to a certain number of cards
+  @container component-wrapper (max-width: #{calc(($min-card-width * 2) + $spacing)}) {
+    .featured-topics {
+      &__topics-wrapper > :nth-child(n + #{$max-vertical-topics + 1}) {
+        display: none;
+      }
+    }
+  }
+}
