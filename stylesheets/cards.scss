@@ -1,6 +1,6 @@
 @if $layout == "cards" {
   .featured-topics {
-    &__topic-wrapper {
+    &__topics-wrapper {
       display: grid;
       grid-template-columns: repeat($max_topic_count, minmax(150px, 1fr));
       grid-gap: 1rem;

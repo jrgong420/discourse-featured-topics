@@ -10,7 +10,7 @@
   }
   &__heading {
   }
-  &__topic-wrapper {
+  &__topics-wrapper {
   }
   &__topic-container {
   }
