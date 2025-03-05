@@ -4,11 +4,11 @@ featured_tags:
   default: "featured"
 layout:
   type: enum
-  default: "container"
+  default: "cards"
   choices:
-    - container
     - cards
     - list
+    - container
     - none
 max_topic_count: 4
 randomize_topics: true
