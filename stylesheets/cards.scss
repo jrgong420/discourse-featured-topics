@@ -51,6 +51,9 @@
       .topic-excerpt {
         @include line-clamp(8);
       }
+      .topic-date {
+        display: none;
+      }
     }
   }
   @include breakpoint(mobile-extra-large) {
