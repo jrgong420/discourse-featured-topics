@@ -55,12 +55,17 @@
   }
   @include breakpoint(mobile-extra-large) {
     .featured-topics {
-      &__topic-wrapper {
+      &__topics-wrapper {
         display: flex;
         flex-direction: column;
       }
       &__topic-container {
         height: unset;
+      }
+      &__topic-details {
+        .topic-author {
+          margin-top: 0.5rem;
+        }
       }
     }
   }
