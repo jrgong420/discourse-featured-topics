@@ -8,7 +8,6 @@ layout:
   choices:
     - cards
     - list
-    - container
     - none
 max_topic_count: 4
 randomize_topics: true
