@@ -99,7 +99,8 @@
       border-radius: 8px;
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      flex: 0 0 calc(100% / 3 - 0.67rem);
+      // Use custom width if set, otherwise use the default responsive width
+      flex: 0 0 if(unquote($card_width) != "", unquote($card_width), calc(100% / 3 - 0.67rem));
 
       &.hovered {
         transform: translateY(-5px);
@@ -271,7 +272,10 @@
   @media (max-width: 992px) {
     .featured-topics {
       &__topic-container {
-        flex: 0 0 calc(50% - 0.5rem);
+        // Only apply this style if no custom width is set
+        @if unquote($card_width) == "" {
+          flex: 0 0 calc(50% - 0.5rem);
+        }
       }
     }
   }
@@ -279,7 +283,10 @@
   @media (max-width: 768px) {
     .featured-topics {
       &__topic-container {
-        flex: 0 0 100%;
+        // Only apply this style if no custom width is set
+        @if unquote($card_width) == "" {
+          flex: 0 0 100%;
+        }
       }
 
       &__nav-button {
@@ -305,6 +312,7 @@
       }
 
       &__topic-container {
+        // Keep height adjustments regardless of custom width
         height: unset;
         min-height: 300px;
       }

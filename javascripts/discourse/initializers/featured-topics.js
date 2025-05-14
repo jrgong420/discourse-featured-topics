@@ -259,32 +259,21 @@ function renderFeaturedTopics($container, topics) {
     }
   });
 
-  // Add pagination dots for desktop
-  if (topics.length > 3) {
-    const $pagination = $("<div class='featured-topics-pagination'></div>");
-    $header.append($pagination);
+  // Add combined pagination dots for both desktop and mobile
+  if (topics.length > 1) {
+    const $mobileNav = $("<div class='featured-topics-mobile-nav'></div>");
 
-    const totalSlides = Math.max(0, topics.length - 3);
-    for (let i = 0; i <= totalSlides; i++) {
-      const $dot = $(`<button class='featured-topics-pagination-dot ${i === 0 ? "active" : ""}' data-slide='${i}' aria-label='Go to slide ${i + 1}'></button>`);
-      $pagination.append($dot);
-    }
+    // Add pills for each topic
+    topics.forEach((_, index) => {
+      const $pill = $(`<div class='nav-pill ${index === 0 ? "active" : ""}' data-slide='${index}'></div>`);
+      $mobileNav.append($pill);
+    });
+
+    // Append to the carousel container after all topics
+    $carousel.append($mobileNav);
+
+    if (DEBUG) console.log("Featured Topics: Added navigation pills");
   }
-
-  // Add mobile navigation pills - position after the wrapper for better visibility
-  const $mobileNav = $("<div class='featured-topics-mobile-nav'></div>");
-
-  // Add pills for each topic (for mobile view)
-  topics.forEach((_, index) => {
-    const $pill = $(`<div class='nav-pill ${index === 0 ? "active" : ""}' data-slide='${index}'></div>`);
-    $mobileNav.append($pill);
-  });
-
-  // Append to the carousel container after all topics
-  // This ensures it's part of the same container but appears after all topics
-  $carousel.append($mobileNav);
-
-  if (DEBUG) console.log("Featured Topics: Added mobile navigation pills");
 
   // Initialize carousel
   try {
@@ -371,8 +360,8 @@ function initCarousel($carousel) {
   const $topics = $container.find('.featured-topics-topic');
   const $prevButton = $carousel.find('.featured-topics-nav-prev');
   const $nextButton = $carousel.find('.featured-topics-nav-next');
-  const $pagination = $('.featured-topics-pagination');
-  const $dots = $pagination.find('.featured-topics-pagination-dot');
+  const $mobileNav = $carousel.find('.featured-topics-mobile-nav');
+  const $pills = $mobileNav.find('.nav-pill');
 
   let currentSlide = 0;
   let startX, startY, endX, endY, threshold = 50;
@@ -547,31 +536,16 @@ function initCarousel($carousel) {
     return false; // Prevent event bubbling
   });
 
-  // Handle pagination dots click
-  $dots.on('click', function() {
+  // Handle navigation pills click
+  $pills.on('click', function() {
     const slideIndex = $(this).data('slide');
-    if (slideIndex >= 0 && slideIndex <= totalSlides) {
-      currentSlide = slideIndex;
-      updateCarousel();
-    }
-  });
-
-  // Handle mobile navigation pills click - use event delegation for better reliability
-  // Since the pills are now direct children of the carousel, delegate from the carousel
-  $carousel.on('click', '.featured-topics-mobile-nav .nav-pill', function(e) {
-    e.preventDefault(); // Prevent any default behavior
-    e.stopPropagation(); // Stop event bubbling
-
-    const slideIndex = parseInt($(this).data('slide'), 10);
-    if (DEBUG) console.log(`Featured Topics: Nav pill clicked for slide ${slideIndex}`);
-
     if (slideIndex >= 0 && slideIndex < $topics.length) {
       currentSlide = slideIndex;
       updateCarousel();
     }
-
-    return false; // Ensure no other handlers are triggered
   });
+
+  // We're now using direct event binding instead of delegation
 
   // Add touch event handlers for mobile swipe
   $wrapper.on('touchstart', function(e) {
@@ -703,63 +677,35 @@ function initCarousel($carousel) {
 
   // Update carousel position
   function updateCarousel() {
-    let translateX;
+    // Get the first card's width and the gap between cards
+    const cardWidth = $topics.first().outerWidth();
+    const gapWidth = parseInt($container.css('gap')) || 16; // Get gap width or default to 16px
+    const containerWidth = $wrapper.width();
 
-    if (isMobile) {
-      // For mobile, we need to calculate the exact position to center the current card
-      // and show a consistent portion of the next card
+    // Calculate the total width of each card including its gap
+    const cardTotalWidth = cardWidth + gapWidth;
 
-      // Calculate card width including gap
-      const cardWidth = $topics.first().outerWidth(true);
-      const containerWidth = $wrapper.width();
+    // Calculate the exact pixel amount to translate
+    // We need to account for the padding/margin offsets we added in CSS
+    const offsetCorrection = isMobile ? 0 : 0.5; // Adjust based on the CSS margin-left value
 
-      // Calculate the exact pixel amount to translate
-      // This ensures the current card is centered with a consistent peek of the next card
-      const pixelTranslate = currentSlide * cardWidth;
+    // Calculate the exact pixel position for the current slide
+    const pixelTranslate = (currentSlide * cardTotalWidth);
 
-      // Convert to percentage for smooth responsive behavior
-      translateX = (pixelTranslate / containerWidth) * 100;
+    if (DEBUG) console.log(`Featured Topics: Slide ${currentSlide}, Card Width: ${cardWidth}px, Gap: ${gapWidth}px, Translate: ${pixelTranslate}px`);
 
-      // Apply the transform with a negative value to move left
-      $container.css('transform', `translateX(-${translateX}%)`);
+    // Apply the transform with a fixed pixel value instead of percentage
+    // This ensures consistent positioning regardless of scroll position
+    $container.css('transform', `translateX(-${pixelTranslate}px)`);
 
-      // Update mobile navigation pills - ensure we're targeting the correct pills
-      // Since we moved the mobile nav to be a direct child of the carousel, adjust our selector
-      const $mobileNav = $carousel.find('.featured-topics-mobile-nav');
-      if ($mobileNav.length) {
-        // First remove active class from all pills
-        $mobileNav.find('.nav-pill').removeClass('active');
-        // Then add active class to the current slide's pill
-        $mobileNav.find(`.nav-pill[data-slide="${currentSlide}"]`).addClass('active');
+    // Update navigation pills
+    $pills.removeClass('active');
+    $pills.filter(`[data-slide="${currentSlide}"]`).addClass('active');
 
-        if (DEBUG) console.log(`Featured Topics: Updated mobile nav to slide ${currentSlide}`);
-      } else {
-        if (DEBUG) console.log('Featured Topics: Mobile nav not found in carousel');
-      }
-    } else {
-      // For desktop, calculate the exact position based on card width and gap
-      const cardWidth = $topics.first().outerWidth(true);
-      const containerWidth = $wrapper.width();
-      const gapWidth = parseInt($container.css('gap')) || 16; // Get gap width or default to 16px
-
-      // Calculate the exact pixel amount to translate
-      // This ensures proper scrolling on desktop
-      const pixelTranslate = currentSlide * (cardWidth + gapWidth);
-
-      // Convert to percentage for smooth responsive behavior
-      translateX = (pixelTranslate / containerWidth) * 100;
-
-      // Apply the transform with a negative value to move left
-      $container.css('transform', `translateX(-${translateX}%)`);
-    }
-
+    if (DEBUG) console.log(`Featured Topics: Updated navigation to slide ${currentSlide}`);
     // With circular navigation, buttons are always enabled
     $prevButton.removeClass('disabled');
     $nextButton.removeClass('disabled');
-
-    // Update pagination dots
-    $dots.removeClass('active');
-    $dots.eq(currentSlide).addClass('active');
   }
 
   // Handle window resize with debounce for better performance

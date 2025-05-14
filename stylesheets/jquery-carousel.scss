@@ -49,15 +49,6 @@
     flex-direction: column; // Change to column to stack wrapper and nav pills
     align-items: center;
     width: 100%; // Ensure full width
-
-    // Position the navigation buttons relative to the carousel
-    .featured-topics-nav-prev,
-    .featured-topics-nav-next {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 40; // Ensure they're above other elements
-    }
   }
 
   .featured-topics-loading,
@@ -100,43 +91,60 @@
     }
   }
 
-  .featured-topics-pagination {
+  // Navigation pills for all screen sizes
+  .featured-topics-mobile-nav {
     display: flex;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    width: 100%;
+    position: relative;
+    z-index: 30;
+    padding: 10px 0;
+    clear: both;
 
-    &-dot {
-      width: 10px;
-      height: 10px;
+    .nav-pill {
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background-color: var(--primary-low);
-      border: none;
-      padding: 0;
+      transition: all 0.3s ease;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      display: block;
+      min-width: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 
       &.active {
         background-color: var(--tertiary);
+        width: 28px;
+        border-radius: 6px;
       }
 
       &:hover {
         background-color: var(--tertiary-hover);
+        transform: scale(1.2);
       }
     }
   }
 
-  .featured-topics-carousel {
-    position: relative;
-    display: flex;
-    align-items: center;
+  // Navigation arrows positioning
+  .featured-topics-nav-prev,
+  .featured-topics-nav-next {
+    position: absolute;
+    top: 30%; // Position higher up to align with the card content
+    transform: translateY(-50%);
+    z-index: 40; // Ensure they're above other elements
   }
 
   .featured-topics-wrapper {
     width: 100%;
-    overflow: hidden;
+    overflow: hidden; /* Changed back to hidden to prevent overlapping with other elements */
     position: relative;
     touch-action: pan-y; /* Allow vertical scrolling but handle horizontal in JS */
     margin-bottom: 10px; /* Add margin to separate from navigation pills */
     cursor: grab; /* Indicate that the carousel is scrollable */
+    padding: 0.5rem 0; /* Add vertical padding to ensure box-shadow is visible */
 
     &:active {
       cursor: grabbing; /* Change cursor when actively scrolling */
@@ -199,11 +207,13 @@
   .featured-topics-items {
     display: flex;
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Smoother easing function */
-    gap: 1rem;
+    gap: 16px; /* Use fixed pixel value for consistent spacing */
     will-change: transform; /* Optimize for animations */
     backface-visibility: hidden; /* Prevent flickering during transitions */
     -webkit-font-smoothing: subpixel-antialiased; /* Improve text rendering during animations */
     transform: translateZ(0); /* Force GPU acceleration */
+    padding-left: 16px; /* Use fixed pixel values for consistent positioning */
+    padding-right: 16px; /* Use fixed pixel values for consistent positioning */
 
     &.mobile-view {
       /* Mobile-specific styles */
@@ -215,8 +225,6 @@
 
   .featured-topics-nav-prev,
   .featured-topics-nav-next {
-    position: absolute;
-    z-index: 40;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -265,11 +273,13 @@
   }
 
   .featured-topics-nav-prev {
-    left: -20px;
+    left: 0;
+    z-index: 50; /* Ensure it's above the cards */
   }
 
   .featured-topics-nav-next {
-    right: -20px;
+    right: 0;
+    z-index: 50; /* Ensure it's above the cards */
   }
 
   .featured-topics-topic {
@@ -282,7 +292,8 @@
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    flex: 0 0 calc(100% / 3 - 0.67rem);
+    // Use custom width if set, otherwise use the default responsive width
+    flex: 0 0 if(unquote($card_width) != "", unquote($card_width), calc(100% / 3 - 0.67rem));
     margin-bottom: 20px; // Increased bottom margin to ensure box shadow is visible
     max-width: 100%; // Ensure it doesn't overflow its container
 
@@ -442,20 +453,28 @@
   // Responsive adjustments
   @media (max-width: 992px) {
     .featured-topics-topic {
-      flex: 0 0 calc(50% - 0.5rem);
+      // Only apply this style if no custom width is set
+      @if unquote($card_width) == "" {
+        flex: 0 0 calc(50% - 0.5rem);
+      }
     }
   }
 
   @media (max-width: 768px) {
     .featured-topics-topic {
-      flex: 0 0 85%; // Reduced to 85% to ensure consistent width and peek of next card
-      margin-right: 5%; // Add margin to show a consistent peek of the next card
+      // Only apply this style if no custom width is set
+      @if unquote($card_width) == "" {
+        flex: 0 0 85%; // Reduced to 85% to ensure consistent width and peek of next card
+        min-width: 85%; // Ensure consistent width
+        max-width: 85%; // Ensure consistent width
+      }
       margin-bottom: 20px; // Increased bottom margin to ensure box shadow is visible
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); // Slightly stronger shadow for better visibility
       height: 350px; // Reduced height for better mobile display
 
       // Reset any margin-left that might be applied from desktop styles
       margin-left: 0 !important;
+      margin-right: 0 !important; // Remove right margin to ensure consistent spacing
 
       // Ensure proper spacing between cards on mobile
       & + .featured-topics-topic {
@@ -465,9 +484,9 @@
 
     // When in mobile view, adjust the spacing
     .featured-topics-items.mobile-view {
-      gap: 0; // Remove gap on mobile to ensure consistent spacing
-      padding-left: 5%; // Add padding to ensure first card is positioned correctly
-      padding-right: 5%; // Add padding to ensure last card is fully visible
+      gap: 16px; // Use a fixed gap value for consistent spacing
+      padding-left: 16px; // Use fixed pixel values for consistent positioning
+      padding-right: 16px; // Use fixed pixel values for consistent positioning
       box-sizing: border-box; // Ensure padding is included in width calculations
       padding-bottom: 50px; // Increased bottom padding to make room for navigation pills
       position: relative; // Ensure proper positioning context for absolute elements
@@ -488,22 +507,25 @@
       }
 
       &.featured-topics-nav-prev {
-        left: 5px; // Position slightly inset from the edge
-        z-index: 40; // Ensure it's above content
+        left: 10px; // Position slightly inset from the edge
+        top: 25%; // Position higher on mobile
+        z-index: 50; /* Ensure it's above the cards */
       }
 
       &.featured-topics-nav-next {
-        right: 5px; // Position slightly inset from the edge
-        z-index: 40; // Ensure it's above content
+        right: 10px; // Position slightly inset from the edge
+        top: 25%; // Position higher on mobile
+        z-index: 50; /* Ensure it's above the cards */
       }
     }
 
     // Ensure the wrapper doesn't hide overflow on mobile
     .featured-topics-wrapper {
-      overflow-x: hidden;
+      overflow-x: hidden; // Changed back to hidden to prevent overlapping with other elements
       -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
       position: relative; // Ensure proper positioning context
       margin-bottom: 40px; // Increased margin to make room for navigation pills
+      padding: 0.5rem 0; // Add vertical padding to ensure box-shadow is visible
     }
 
     // Ensure consistent height on mobile

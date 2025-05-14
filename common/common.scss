@@ -12,6 +12,9 @@
 // Plugin outlets - make sure our component works in all locations
 .featured-topics-container {
   margin: 1.5rem 0;
+  padding: 0; /* Remove padding as we're using negative margins in the items container */
+  box-sizing: border-box; /* Ensure padding is included in width calculations */
+  overflow: hidden; /* Ensure content doesn't overflow and overlap with other elements */
 
   // When inside specific outlets, adjust margins
   .above-main-container &,
