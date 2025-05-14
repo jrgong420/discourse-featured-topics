@@ -1,14 +1,14 @@
 @import "styles";
 
-// Layouts
+// jQuery carousel base styles
+@import "jquery-carousel";
+
+// Layouts - these should override the base styles
 @import "cards";
 @import "list";
 @import "full-bleed";
 @if $layout == "none" {
 }
-
-// jQuery carousel styles
-@import "jquery-carousel";
 
 // Plugin outlets - make sure our component works in all locations
 .featured-topics-container {

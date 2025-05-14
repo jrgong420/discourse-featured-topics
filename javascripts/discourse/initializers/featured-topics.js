@@ -1,7 +1,7 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 
 // Debug mode - set to false for production, true for development
-const DEBUG = false; // Set to false to disable all console logs
+const DEBUG = true; // Set to true temporarily to debug layout issues
 
 // Utility functions to replace jQuery
 // DOM selection - single element
@@ -353,12 +353,29 @@ function renderFeaturedTopics(container, topics) {
   // Save the layout class before clearing
   const layoutClass = container.className.match(/layout-[a-z-]+/);
 
+  if (DEBUG) {
+    console.log("Featured Topics: Container class before clearing:", container.className);
+    console.log("Featured Topics: Detected layout class:", layoutClass ? layoutClass[0] : "none");
+  }
+
   // Clear container
   container.innerHTML = '';
 
   // Restore layout class if it was removed
   if (layoutClass && !container.classList.contains(layoutClass[0])) {
     container.classList.add(layoutClass[0]);
+    if (DEBUG) console.log("Featured Topics: Restored layout class:", layoutClass[0]);
+  }
+
+  // Force the layout class to be applied if it's full-bleed
+  if (layoutClass && layoutClass[0] === "layout-full-bleed") {
+    // Ensure the class is applied
+    container.classList.add("layout-full-bleed");
+    if (DEBUG) console.log("Featured Topics: Forced full-bleed layout class");
+  }
+
+  if (DEBUG) {
+    console.log("Featured Topics: Container class after restoration:", container.className);
   }
 
   // Create header
@@ -390,6 +407,14 @@ function renderFeaturedTopics(container, topics) {
   topics.forEach(topic => {
     try {
       const topicCard = createTopicCard(topic);
+
+      // Check if we're in full-bleed layout and add a data attribute
+      const isFullBleed = container.classList.contains('layout-full-bleed');
+      if (isFullBleed) {
+        topicCard.setAttribute('data-layout', 'full-bleed');
+        if (DEBUG) console.log("Featured Topics: Applied full-bleed data attribute to topic card");
+      }
+
       topicsContainer.appendChild(topicCard);
     } catch (error) {
       if (DEBUG) console.error("Featured Topics: Error creating topic card", error);
@@ -430,6 +455,10 @@ function createTopicCard(topic) {
 
   // Create topic card
   const topicCard = createElement("<div class='featured-topics-topic'></div>");
+
+  if (DEBUG) {
+    console.log("Featured Topics: Created topic card element:", topicCard);
+  }
 
   // Add thumbnail if available
   if (topic.image_url) {
