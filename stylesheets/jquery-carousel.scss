@@ -133,7 +133,7 @@
   .featured-topics-nav-next {
     position: absolute;
     top: 30%; // Position higher up to align with the card content
-    transform: translateY(-50%);
+    // Remove the translateY to prevent excessive movement
     z-index: 40; // Ensure they're above other elements
   }
 
@@ -174,34 +174,7 @@
       pointer-events: none; /* Ensure it doesn't interfere with interactions */
     }
 
-    /* Add horizontal scroll hint arrows that fade in on hover */
-    &:before {
-      content: "⟺"; /* Double-headed arrow character */
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 24px;
-      color: var(--tertiary);
-      background-color: rgba(255, 255, 255, 0.8);
-      padding: 8px 16px;
-      border-radius: 20px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      pointer-events: none;
-      z-index: 50;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    &:hover:before {
-      opacity: 0.8;
-      animation: fadeOut 1.5s forwards 0.5s;
-    }
-
-    @keyframes fadeOut {
-      from { opacity: 0.8; }
-      to { opacity: 0; }
-    }
+    /* Removed center icon overlay */
   }
 
   .featured-topics-items {
@@ -249,7 +222,7 @@
 
     &:hover {
       background-color: var(--primary-very-low);
-      transform: scale(1.02); // More subtle scale effect
+      // Remove scale transform to prevent movement
       box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); // Slightly enhanced shadow
 
       svg {
@@ -292,8 +265,8 @@
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    // Use custom width if set, otherwise use the default responsive width
-    flex: 0 0 if(unquote($card_width) != "", unquote($card_width), calc(100% / 3 - 0.67rem));
+    // Use custom desktop width if set, otherwise use the default responsive width
+    flex: 0 0 if(unquote($desktop_card_width) != "", unquote($desktop_card_width), calc(100% / 3 - 0.67rem));
     margin-bottom: 20px; // Increased bottom margin to ensure box shadow is visible
     max-width: 100%; // Ensure it doesn't overflow its container
 
@@ -451,10 +424,12 @@
   }
 
   // Responsive adjustments
-  @media (max-width: 992px) {
+  @media (max-width: 992px) and (min-width: 769px) {
     .featured-topics-topic {
-      // Only apply this style if no custom width is set
-      @if unquote($card_width) == "" {
+      // Use desktop width for tablets if set, otherwise use 50% width
+      @if unquote($desktop_card_width) != "" {
+        flex: 0 0 unquote($desktop_card_width);
+      } @else {
         flex: 0 0 calc(50% - 0.5rem);
       }
     }
@@ -462,8 +437,12 @@
 
   @media (max-width: 768px) {
     .featured-topics-topic {
-      // Only apply this style if no custom width is set
-      @if unquote($card_width) == "" {
+      // Use custom mobile width if set, otherwise use the default mobile width (85%)
+      @if unquote($mobile_card_width) != "" {
+        flex: 0 0 unquote($mobile_card_width);
+        min-width: unquote($mobile_card_width);
+        max-width: unquote($mobile_card_width);
+      } @else {
         flex: 0 0 85%; // Reduced to 85% to ensure consistent width and peek of next card
         min-width: 85%; // Ensure consistent width
         max-width: 85%; // Ensure consistent width
@@ -510,12 +489,14 @@
         left: 10px; // Position slightly inset from the edge
         top: 25%; // Position higher on mobile
         z-index: 50; /* Ensure it's above the cards */
+        // No transform to prevent movement
       }
 
       &.featured-topics-nav-next {
         right: 10px; // Position slightly inset from the edge
         top: 25%; // Position higher on mobile
         z-index: 50; /* Ensure it's above the cards */
+        // No transform to prevent movement
       }
     }
 

@@ -25,7 +25,11 @@ show_on:
     - top
     - custom
 plugin_outlet: "above-main-container"
-card_width:
+desktop_card_width:
   type: string
   default: ""
-  description: "Width of each card (e.g., 300px, 20em, 25rem, 30%, 30vw). Leave empty to use default responsive widths."
+  description: "Width of each card on desktop (e.g., 300px, 20em, 25rem, 30%, 30vw). Leave empty to use default responsive widths."
+mobile_card_width:
+  type: string
+  default: ""
+  description: "Width of each card on mobile (e.g., 300px, 20em, 25rem, 85%, 85vw). Leave empty to use default responsive width (85%)."

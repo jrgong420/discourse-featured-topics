@@ -99,8 +99,8 @@
       border-radius: 8px;
       overflow: hidden;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      // Use custom width if set, otherwise use the default responsive width
-      flex: 0 0 if(unquote($card_width) != "", unquote($card_width), calc(100% / 3 - 0.67rem));
+      // Use custom desktop width if set, otherwise use the default responsive width
+      flex: 0 0 if(unquote($desktop_card_width) != "", unquote($desktop_card_width), calc(100% / 3 - 0.67rem));
 
       &.hovered {
         transform: translateY(-5px);
@@ -269,11 +269,13 @@
   }
 
   // Responsive adjustments
-  @media (max-width: 992px) {
+  @media (max-width: 992px) and (min-width: 769px) {
     .featured-topics {
       &__topic-container {
-        // Only apply this style if no custom width is set
-        @if unquote($card_width) == "" {
+        // Use desktop width for tablets if set, otherwise use 50% width
+        @if unquote($desktop_card_width) != "" {
+          flex: 0 0 unquote($desktop_card_width);
+        } @else {
           flex: 0 0 calc(50% - 0.5rem);
         }
       }
@@ -283,8 +285,10 @@
   @media (max-width: 768px) {
     .featured-topics {
       &__topic-container {
-        // Only apply this style if no custom width is set
-        @if unquote($card_width) == "" {
+        // Use custom mobile width if set, otherwise use 100% width
+        @if unquote($mobile_card_width) != "" {
+          flex: 0 0 unquote($mobile_card_width);
+        } @else {
           flex: 0 0 100%;
         }
       }
