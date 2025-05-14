@@ -736,15 +736,19 @@ function initCarousel(carousel) {
   });
 
   wrapper.addEventListener('touchmove', function(e) {
-    // Prevent default only if horizontal swipe is detected
-    // This allows vertical scrolling to still work
+    // Only handle touch events with at least one touch point
     if (e.touches.length > 0) {
       const touch = e.touches[0] || e.changedTouches[0];
       endX = touch.pageX;
       endY = touch.pageY;
 
-      // If horizontal movement is greater than vertical, prevent default
-      if (Math.abs(endX - startX) > Math.abs(endY - startY)) {
+      // Calculate horizontal and vertical distances
+      const diffX = Math.abs(endX - startX);
+      const diffY = Math.abs(endY - startY);
+
+      // Only prevent default if this is clearly a horizontal swipe
+      // and the horizontal movement is significantly greater than vertical
+      if (diffX > 10 && diffX > diffY * 2) {
         e.preventDefault();
       }
     }
@@ -788,8 +792,24 @@ function initCarousel(carousel) {
   let lastScrollTime = 0;
 
   wrapper.addEventListener('wheel', function(e) {
-    // Always prevent default to avoid page scrolling
-    e.preventDefault();
+    // Get the delta X (horizontal scroll) and delta Y (vertical scroll)
+    const deltaX = e.deltaX;
+    const deltaY = e.deltaY;
+
+    // Only handle horizontal scrolling events
+    // If this is primarily a vertical scroll, let the page scroll normally
+    if (Math.abs(deltaY) > Math.abs(deltaX) * 2) {
+      // This is primarily a vertical scroll, don't interfere
+      return true;
+    }
+
+    // For horizontal scrolling, prevent default to avoid page scrolling horizontally
+    if (Math.abs(deltaX) > 5) {
+      e.preventDefault();
+    } else {
+      // Not enough horizontal movement to consider it intentional
+      return true;
+    }
 
     // Get current time for throttling
     const now = Date.now();
@@ -801,22 +821,10 @@ function initCarousel(carousel) {
 
     lastScrollTime = now;
 
-    // Get the delta X (horizontal scroll) and delta Y (vertical scroll)
-    const deltaX = e.deltaX;
-    const deltaY = e.deltaY;
-
-    // Determine scroll direction based on the larger delta
-    // For macOS, we need to consider both deltaX and deltaY
+    // Only handle significant horizontal scrolling
     let direction = null;
-
-    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
-      // If horizontal scrolling is more significant or there's a clear horizontal intent
-      if (Math.abs(deltaX) > Math.abs(deltaY) * 0.5) {
-        direction = deltaX > 0 ? 'right' : 'left';
-      } else {
-        // For vertical scrolling, treat down as right and up as left
-        direction = deltaY > 0 ? 'right' : 'left';
-      }
+    if (Math.abs(deltaX) > 5) {
+      direction = deltaX > 0 ? 'right' : 'left';
     }
 
     // If we have a direction and we're not already scrolling

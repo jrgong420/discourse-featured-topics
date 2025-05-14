@@ -141,7 +141,7 @@
     width: 100%;
     overflow: hidden; /* Changed back to hidden to prevent overlapping with other elements */
     position: relative;
-    touch-action: pan-y; /* Allow vertical scrolling but handle horizontal in JS */
+    touch-action: manipulation; /* Allow both vertical scrolling and touch manipulation */
     margin-bottom: 10px; /* Add margin to separate from navigation pills */
     cursor: grab; /* Indicate that the carousel is scrollable */
     padding: 0.5rem 0; /* Add vertical padding to ensure box-shadow is visible */

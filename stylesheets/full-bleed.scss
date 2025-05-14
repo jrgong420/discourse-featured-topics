@@ -303,7 +303,9 @@
   @include breakpoint(mobile-extra-large) {
     .featured-topics-container {
       .featured-topics-items {
-        flex-direction: column;
+        // Keep horizontal layout for full-bleed cards
+        display: flex;
+        flex-direction: row;
         gap: 1rem;
       }
 
@@ -311,6 +313,18 @@
         // Keep height adjustments regardless of custom width
         height: 350px;
         min-height: 350px;
+        // Ensure proper width on mobile
+        @if unquote($mobile_card_width) != "" {
+          flex: 0 0 unquote($mobile_card_width);
+          min-width: unquote($mobile_card_width);
+          max-width: unquote($mobile_card_width);
+        } @else {
+          flex: 0 0 90%;
+          min-width: 90%;
+          max-width: 90%;
+        }
+        // Add margin to ensure proper spacing
+        margin-right: 1rem;
       }
 
       .featured-topics-topic-details {
