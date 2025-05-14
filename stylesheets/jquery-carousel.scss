@@ -1,0 +1,455 @@
+.featured-topics-container {
+  margin: 1.5rem 0;
+  min-height: 100px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+
+  // Global styles for mobile navigation pills
+  .featured-topics-mobile-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 15px;
+    width: 100%;
+    position: relative;
+    z-index: 30;
+    padding: 10px 0;
+    clear: both;
+    order: 999; // Ensure it appears at the end of flex container
+
+    .nav-pill {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--primary-low);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: block;
+      min-width: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+      &.active {
+        background-color: var(--tertiary);
+        width: 24px;
+        border-radius: 5px;
+      }
+
+      &:hover {
+        background-color: var(--tertiary-hover);
+        transform: scale(1.2);
+      }
+    }
+  }
+
+  .featured-topics-loading,
+  .featured-topics-empty,
+  .featured-topics-error {
+    padding: 2rem;
+    text-align: center;
+    background-color: var(--secondary);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-size: 1.2em;
+    color: var(--primary-medium);
+  }
+
+  .featured-topics-loading:before {
+    content: "";
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 3px solid var(--tertiary);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: featured-topics-spin 1s linear infinite;
+  }
+
+  @keyframes featured-topics-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .featured-topics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+  }
+
+  .featured-topics-pagination {
+    display: flex;
+    gap: 0.5rem;
+
+    &-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--primary-low);
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+
+      &.active {
+        background-color: var(--tertiary);
+      }
+
+      &:hover {
+        background-color: var(--tertiary-hover);
+      }
+    }
+  }
+
+  .featured-topics-carousel {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .featured-topics-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    touch-action: pan-y; /* Allow vertical scrolling but handle horizontal in JS */
+  }
+
+  .featured-topics-items {
+    display: flex;
+    transition: transform 0.5s ease;
+    gap: 1rem;
+    will-change: transform; /* Optimize for animations */
+
+    &.mobile-view {
+      /* Mobile-specific styles */
+      width: 100%;
+      box-sizing: border-box;
+      transition: transform 0.3s ease; /* Slightly faster transition on mobile for better UX */
+    }
+  }
+
+  .featured-topics-nav-prev,
+  .featured-topics-nav-next {
+    position: absolute;
+    z-index: 10;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--secondary);
+    border: 1px solid var(--primary-low);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    &:hover {
+      background-color: var(--primary-very-low);
+      transform: scale(1.05);
+    }
+
+    &.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: var(--secondary);
+        transform: none;
+      }
+    }
+  }
+
+  .featured-topics-nav-prev {
+    left: -20px;
+  }
+
+  .featured-topics-nav-next {
+    right: -20px;
+  }
+
+  .featured-topics-topic {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+    background-color: var(--secondary);
+    box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    flex: 0 0 calc(100% / 3 - 0.67rem);
+    margin-bottom: 20px; // Increased bottom margin to ensure box shadow is visible
+    max-width: 100%; // Ensure it doesn't overflow its container
+
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.3);
+    }
+
+    // Ensure proper spacing between elements
+    & + .featured-topics-topic {
+      margin-left: 1rem; // Add consistent spacing between cards
+    }
+  }
+
+  .featured-topics-topic-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .featured-topics-topic-thumbnail {
+    position: relative;
+    height: 45%;
+    width: 100%;
+    overflow: hidden;
+    background-color: var(--primary-very-low);
+
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+      display: block; // Ensure proper display
+    }
+
+    .featured-topics-topic-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &.placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--primary-very-low);
+
+      .featured-topics-topic-placeholder {
+        width: 100%;
+        height: 100%;
+        background-color: var(--primary-low);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23999' d='M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5-7l-3 3.72L9 13l-3 4h12l-4-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 48px;
+      }
+    }
+  }
+
+  .featured-topics-topic:hover {
+    .featured-topics-topic-thumbnail img {
+      transform: scale(1.05);
+    }
+
+    .featured-topics-topic-overlay {
+      opacity: 1;
+    }
+  }
+
+  .featured-topics-topic-details {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding: 1rem;
+    color: var(--primary);
+    position: relative;
+    z-index: 2;
+  }
+
+  .featured-topics-topic-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    font-size: 1.2em;
+    transition: color 0.3s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .featured-topics-topic-excerpt {
+    margin-bottom: 0.5rem;
+    font-size: 0.9em;
+    color: var(--primary-medium);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+
+  .featured-topics-cta-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+    position: relative;
+    z-index: 3;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+
+  .featured-topics-cta-button {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 3;
+
+    &.primary {
+      background-color: var(--tertiary);
+      color: var(--secondary) !important;
+      border: 2px solid var(--tertiary);
+
+      &:hover {
+        background-color: var(--tertiary-hover);
+        border-color: var(--tertiary-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    &.secondary {
+      background-color: transparent;
+      color: var(--tertiary) !important;
+      border: 2px solid var(--tertiary);
+
+      &:hover {
+        background-color: var(--tertiary-low);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 992px) {
+    .featured-topics-topic {
+      flex: 0 0 calc(50% - 0.5rem);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .featured-topics-topic {
+      flex: 0 0 85%; // Reduced to 85% to ensure consistent width and peek of next card
+      margin-right: 5%; // Add margin to show a consistent peek of the next card
+      margin-bottom: 20px; // Increased bottom margin to ensure box shadow is visible
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); // Slightly stronger shadow for better visibility
+      height: 350px; // Reduced height for better mobile display
+
+      // Reset any margin-left that might be applied from desktop styles
+      margin-left: 0 !important;
+
+      // Ensure proper spacing between cards on mobile
+      & + .featured-topics-topic {
+        margin-left: 0 !important; // Override desktop spacing
+      }
+    }
+
+    // When in mobile view, adjust the spacing
+    .featured-topics-items.mobile-view {
+      gap: 0; // Remove gap on mobile to ensure consistent spacing
+      padding-left: 5%; // Add padding to ensure first card is positioned correctly
+      padding-right: 5%; // Add padding to ensure last card is fully visible
+      box-sizing: border-box; // Ensure padding is included in width calculations
+      padding-bottom: 50px; // Increased bottom padding to make room for navigation pills
+      position: relative; // Ensure proper positioning context for absolute elements
+    }
+
+    .featured-topics-nav-prev,
+    .featured-topics-nav-next {
+      width: 30px;
+      height: 30px;
+      opacity: 0.9; // Make slightly more visible on mobile
+
+      &.featured-topics-nav-prev {
+        left: 0px; // Position at the edge
+        z-index: 20; // Ensure it's above content
+      }
+
+      &.featured-topics-nav-next {
+        right: 0px; // Position at the edge
+        z-index: 20; // Ensure it's above content
+      }
+    }
+
+    // Ensure the wrapper doesn't hide overflow on mobile
+    .featured-topics-wrapper {
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch; // Smooth scrolling on iOS
+      position: relative; // Ensure proper positioning context
+      margin-bottom: 40px; // Increased margin to make room for navigation pills
+    }
+
+    // Ensure consistent height on mobile
+    .featured-topics-topic {
+      height: 380px; // Slightly smaller height on mobile
+    }
+
+    // Mobile navigation pills - ensure they're visible
+    .featured-topics-mobile-nav {
+      display: flex !important; // Force display on mobile
+      justify-content: center;
+      gap: 8px;
+      margin-top: 15px; // Reduced margin for better positioning
+      margin-bottom: 15px;
+      width: 100%;
+      position: relative;
+      z-index: 30; // Ensure it's above other elements
+      padding: 10px 0; // Add padding for better touch targets
+      clear: both; // Ensure it's not affected by floats
+      order: 999; // Ensure it appears at the end of flex container
+
+      // Ensure it's positioned correctly within the items container
+      .featured-topics-items & {
+        position: absolute;
+        bottom: -40px; // Position below the cards
+        left: 0;
+        right: 0;
+      }
+
+      .nav-pill {
+        width: 12px; // Slightly larger for better visibility
+        height: 12px; // Slightly larger for better visibility
+        border-radius: 50%;
+        background-color: var(--primary-low);
+        transition: all 0.3s ease;
+        cursor: pointer; // Show pointer cursor on hover
+        display: block; // Ensure it's visible
+        min-width: 12px; // Ensure minimum width
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15); // Stronger shadow for better visibility
+
+        &.active {
+          background-color: var(--tertiary);
+          width: 28px; // Make active pill wider
+          border-radius: 6px; // Pill shape for active indicator
+        }
+
+        &:hover {
+          background-color: var(--tertiary-hover);
+          transform: scale(1.2); // Slightly enlarge on hover
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,9 @@
 en:
   heading: Featured Topics
+  read_more: Read Topic
+  visit_link: Visit Link
+  prev_slide: Previous
+  next_slide: Next
+  go_to_slide: Go to slide
   theme_metadata:
-    description: Feature select topics
+    description: Feature select topics with horizontal scrolling carousel

@@ -6,7 +6,29 @@
 @if $layout == "none" {
 }
 
-// Plugin outlets
-.featured-topics__wrapper.above-main-container {
-  margin-bottom: 1.5rem;
+// jQuery carousel styles
+@import "jquery-carousel";
+
+// Plugin outlets - make sure our component works in all locations
+.featured-topics-container {
+  margin: 1.5rem 0;
+
+  // When inside specific outlets, adjust margins
+  .above-main-container &,
+  .discovery-list-container-top &,
+  .discovery-above & {
+    margin-bottom: 1.5rem;
+    margin-top: 0;
+  }
+
+  .discovery-below &,
+  .above-footer & {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+  }
+
+  // When directly inside the main outlet (our fallback)
+  #main-outlet > & {
+    margin-bottom: 1.5rem;
+  }
 }
