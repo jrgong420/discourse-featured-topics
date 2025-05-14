@@ -5,8 +5,8 @@
   "name": "Featured Topics",
   "component": true,
   "authors": "jrgong420",
-  "description": "A customizable, responsive carousel component for showcasing featured topics in Discourse forums",
-  "version": "1.0.0",
+  "description": "A customizable, responsive carousel component for showcasing featured topics in Discourse forums with multiple layout options including cards, list, and full-bleed designs",
+  "version": "1.1.0",
   "modifiers": {
     "topic_thumbnail_sizes": [
       [375, 375],

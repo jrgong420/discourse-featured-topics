@@ -33,7 +33,7 @@ The component can be configured through the theme settings:
 | Setting | Description | Default |
 |---------|-------------|---------|
 | `featured_tags` | Tags used to identify featured topics | `featured` |
-| `layout` | Layout style for the component | `cards` |
+| `layout` | Layout style for the component (`cards`, `list`, `full-bleed`, `none`) | `cards` |
 | `max_topic_count` | Maximum number of topics to display | `4` |
 | `randomize_topics` | Whether to randomize the order of topics | `true` |
 | `show_with_img_only` | Only show topics with images | `false` |
@@ -62,7 +62,11 @@ The component uses Discourse theme variables for colors, making it automatically
 
 1. Adjusting the card width settings for desktop and mobile
 2. Modifying the SCSS files in the theme component
-3. Changing the layout setting between cards and list views
+3. Changing the layout setting to one of the available options:
+   - `cards`: Standard card layout with image at the top (45% height) and content below
+   - `list`: Horizontal list layout with image on the left and content on the right
+   - `full-bleed`: Immersive layout with full-card image and text overlay with gradient background
+   - `none`: Disable visual styling (for custom implementations)
 
 ## Browser Compatibility
 
@@ -82,6 +86,7 @@ The component uses Discourse theme variables for colors, making it automatically
 - `stylesheets/jquery-carousel.scss`: Carousel styling
 - `stylesheets/cards.scss`: Card layout styling
 - `stylesheets/list.scss`: List layout styling
+- `stylesheets/full-bleed.scss`: Full-bleed layout styling
 - `common/common.scss`: Common styles and imports
 
 ### Error Handling

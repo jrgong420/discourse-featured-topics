@@ -202,8 +202,11 @@ function initFeaturedTopics(api, outlet, prependToOutlet = false) {
     return;
   }
 
-  // Create container
-  const container = createElement("<div class='featured-topics-container'></div>");
+  // Get layout setting
+  const layout = getThemeSetting(api, "layout", "cards");
+
+  // Create container with layout class
+  const container = createElement(`<div class='featured-topics-container layout-${layout}'></div>`);
 
   // Either prepend or append based on the parameter
   if (prependToOutlet) {
@@ -347,8 +350,16 @@ function renderSampleTopics(container) {
 }
 
 function renderFeaturedTopics(container, topics) {
+  // Save the layout class before clearing
+  const layoutClass = container.className.match(/layout-[a-z-]+/);
+
   // Clear container
   container.innerHTML = '';
+
+  // Restore layout class if it was removed
+  if (layoutClass && !container.classList.contains(layoutClass[0])) {
+    container.classList.add(layoutClass[0]);
+  }
 
   // Create header
   const header = createElement("<div class='featured-topics-header'><h2>Featured Topics</h2></div>");

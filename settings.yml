@@ -8,6 +8,7 @@ layout:
   choices:
     - cards
     - list
+    - full-bleed
     - none
 max_topic_count: 4
 randomize_topics: true
