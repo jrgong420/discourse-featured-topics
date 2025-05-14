@@ -1,9 +1,12 @@
 {
-  "about_url": "TODO: Put your theme's public repo or Meta topic URL here",
-  "license_url": "TODO: Put your theme's LICENSE URL here",
+  "about_url": "https://github.com/jrgong420/discourse-featured-topics",
+  "license_url": "https://github.com/jrgong420/discourse-featured-topics/blob/main/LICENSE",
   "assets": {},
   "name": "Featured Topics",
   "component": true,
+  "authors": "jrgong420",
+  "description": "A customizable, responsive carousel component for showcasing featured topics in Discourse forums",
+  "version": "1.0.0",
   "modifiers": {
     "topic_thumbnail_sizes": [
       [375, 375],
