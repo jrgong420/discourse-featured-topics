@@ -17,29 +17,46 @@
     z-index: 30;
     padding: 10px 0;
     clear: both;
-    order: 999; // Ensure it appears at the end of flex container
 
     .nav-pill {
-      width: 10px;
-      height: 10px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background-color: var(--primary-low);
       transition: all 0.3s ease;
       cursor: pointer;
       display: block;
-      min-width: 10px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      min-width: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 
       &.active {
         background-color: var(--tertiary);
-        width: 24px;
-        border-radius: 5px;
+        width: 28px;
+        border-radius: 6px;
       }
 
       &:hover {
         background-color: var(--tertiary-hover);
         transform: scale(1.2);
       }
+    }
+  }
+
+  // Ensure the carousel container can position the navigation pills properly
+  .featured-topics-carousel {
+    position: relative;
+    display: flex;
+    flex-direction: column; // Change to column to stack wrapper and nav pills
+    align-items: center;
+    width: 100%; // Ensure full width
+
+    // Position the navigation buttons relative to the carousel
+    .featured-topics-nav-prev,
+    .featured-topics-nav-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 40; // Ensure they're above other elements
     }
   }
 
@@ -118,26 +135,88 @@
     overflow: hidden;
     position: relative;
     touch-action: pan-y; /* Allow vertical scrolling but handle horizontal in JS */
+    margin-bottom: 10px; /* Add margin to separate from navigation pills */
+    cursor: grab; /* Indicate that the carousel is scrollable */
+
+    &:active {
+      cursor: grabbing; /* Change cursor when actively scrolling */
+    }
+
+    &:focus {
+      outline: none; /* Remove default focus outline */
+      box-shadow: 0 0 0 2px var(--tertiary-low); /* Add custom focus indicator */
+    }
+
+    /* Add a subtle horizontal scroll indicator */
+    &:after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--tertiary-low) 20%,
+        var(--tertiary-low) 80%,
+        transparent 100%
+      );
+      opacity: 0.5;
+      border-radius: 2px;
+      pointer-events: none; /* Ensure it doesn't interfere with interactions */
+    }
+
+    /* Add horizontal scroll hint arrows that fade in on hover */
+    &:before {
+      content: "⟺"; /* Double-headed arrow character */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      color: var(--tertiary);
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 8px 16px;
+      border-radius: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    &:hover:before {
+      opacity: 0.8;
+      animation: fadeOut 1.5s forwards 0.5s;
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 0.8; }
+      to { opacity: 0; }
+    }
   }
 
   .featured-topics-items {
     display: flex;
-    transition: transform 0.5s ease;
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); /* Smoother easing function */
     gap: 1rem;
     will-change: transform; /* Optimize for animations */
+    backface-visibility: hidden; /* Prevent flickering during transitions */
+    -webkit-font-smoothing: subpixel-antialiased; /* Improve text rendering during animations */
+    transform: translateZ(0); /* Force GPU acceleration */
 
     &.mobile-view {
       /* Mobile-specific styles */
       width: 100%;
       box-sizing: border-box;
-      transition: transform 0.3s ease; /* Slightly faster transition on mobile for better UX */
+      transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); /* Slightly faster transition on mobile for better UX */
     }
   }
 
   .featured-topics-nav-prev,
   .featured-topics-nav-next {
     position: absolute;
-    z-index: 10;
+    z-index: 40;
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -150,10 +229,24 @@
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0; // Remove default button padding
+
+    svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--primary);
+      stroke-width: 2;
+      fill: none;
+    }
 
     &:hover {
       background-color: var(--primary-very-low);
-      transform: scale(1.05);
+      transform: scale(1.02); // More subtle scale effect
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); // Slightly enhanced shadow
+
+      svg {
+        stroke: var(--tertiary);
+      }
     }
 
     &.disabled {
@@ -163,6 +256,10 @@
       &:hover {
         background-color: var(--secondary);
         transform: none;
+
+        svg {
+          stroke: var(--primary);
+        }
       }
     }
   }
@@ -378,18 +475,26 @@
 
     .featured-topics-nav-prev,
     .featured-topics-nav-next {
-      width: 30px;
-      height: 30px;
-      opacity: 0.9; // Make slightly more visible on mobile
+      width: 36px;
+      height: 36px;
+      opacity: 0.95; // Make more visible on mobile
+      background-color: var(--secondary);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); // Stronger shadow for better visibility
+
+      svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2.5; // Slightly thicker for better visibility on mobile
+      }
 
       &.featured-topics-nav-prev {
-        left: 0px; // Position at the edge
-        z-index: 20; // Ensure it's above content
+        left: 5px; // Position slightly inset from the edge
+        z-index: 40; // Ensure it's above content
       }
 
       &.featured-topics-nav-next {
-        right: 0px; // Position at the edge
-        z-index: 20; // Ensure it's above content
+        right: 5px; // Position slightly inset from the edge
+        z-index: 40; // Ensure it's above content
       }
     }
 
@@ -418,15 +523,6 @@
       z-index: 30; // Ensure it's above other elements
       padding: 10px 0; // Add padding for better touch targets
       clear: both; // Ensure it's not affected by floats
-      order: 999; // Ensure it appears at the end of flex container
-
-      // Ensure it's positioned correctly within the items container
-      .featured-topics-items & {
-        position: absolute;
-        bottom: -40px; // Position below the cards
-        left: 0;
-        right: 0;
-      }
 
       .nav-pill {
         width: 12px; // Slightly larger for better visibility
@@ -450,6 +546,13 @@
           transform: scale(1.2); // Slightly enlarge on hover
         }
       }
+    }
+
+    // Ensure the carousel container properly positions the navigation pills on mobile
+    .featured-topics-carousel {
+      flex-direction: column; // Stack elements vertically
+      align-items: center;
+      margin-bottom: 20px; // Add margin to ensure pills are visible
     }
   }
 }

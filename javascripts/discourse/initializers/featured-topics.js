@@ -232,9 +232,9 @@ function renderFeaturedTopics($container, topics) {
   const $carousel = $("<div class='featured-topics-carousel'></div>");
   $container.append($carousel);
 
-  // Create navigation buttons
-  const $prevButton = $("<button class='featured-topics-nav-prev' aria-label='Previous slide'><span class='d-icon d-icon-chevron-left'></span></button>");
-  const $nextButton = $("<button class='featured-topics-nav-next' aria-label='Next slide'><span class='d-icon d-icon-chevron-right'></span></button>");
+  // Create navigation buttons with SVG icons to ensure they always display
+  const $prevButton = $("<button class='featured-topics-nav-prev' aria-label='Previous slide'><svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='15 18 9 12 15 6'></polyline></svg></button>");
+  const $nextButton = $("<button class='featured-topics-nav-next' aria-label='Next slide'><svg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='9 18 15 12 9 6'></polyline></svg></button>");
 
   if (topics.length > 3) {
     $carousel.append($prevButton);
@@ -280,8 +280,11 @@ function renderFeaturedTopics($container, topics) {
     $mobileNav.append($pill);
   });
 
-  // Insert after the carousel container to ensure proper positioning
-  $container.append($mobileNav);
+  // Append to the carousel container after all topics
+  // This ensures it's part of the same container but appears after all topics
+  $carousel.append($mobileNav);
+
+  if (DEBUG) console.log("Featured Topics: Added mobile navigation pills");
 
   // Initialize carousel
   try {
@@ -391,26 +394,156 @@ function initCarousel($carousel) {
     }, 50);
   }
 
-  // Disable prev button initially
-  $prevButton.addClass('disabled');
+  // With circular navigation, no need to disable buttons initially
 
-  // Handle next button click
-  $nextButton.on('click', function(e) {
-    e.preventDefault(); // Prevent default button behavior
-    if (currentSlide < totalSlides) {
-      currentSlide++;
+  // Add keyboard navigation support
+  $carousel.attr('tabindex', '0'); // Make the carousel focusable
+
+  // Add mouse drag scrolling support for desktop - improved version
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragStartY = 0;
+  let dragThreshold = 50; // Minimum drag distance to trigger slide change
+  let isHorizontalDrag = false;
+  let dragStartTime = 0;
+
+  // Use mousedown/up on the wrapper but track movement on document
+  // This allows the drag to continue even if the mouse leaves the carousel
+  $wrapper.on('mousedown', function(e) {
+    // Only handle left mouse button
+    if (e.which !== 1) return;
+
+    // Store initial position and time
+    isDragging = true;
+    dragStartX = e.pageX;
+    dragStartY = e.pageY;
+    dragStartTime = Date.now();
+    isHorizontalDrag = false; // Reset direction detection
+
+    // Change cursor to indicate grabbing
+    $wrapper.css('cursor', 'grabbing');
+
+    // Prevent text selection during drag
+    e.preventDefault();
+  });
+
+  $(document).on('mousemove', function(e) {
+    if (!isDragging) return;
+
+    // Calculate distance moved
+    const dragDistanceX = e.pageX - dragStartX;
+    const dragDistanceY = e.pageY - dragStartY;
+
+    // Determine if this is primarily a horizontal drag
+    // Only do this once per drag operation
+    if (!isHorizontalDrag && (Math.abs(dragDistanceX) > 10 || Math.abs(dragDistanceY) > 10)) {
+      isHorizontalDrag = Math.abs(dragDistanceX) > Math.abs(dragDistanceY);
+    }
+
+    // If this is a horizontal drag, prevent default to avoid text selection
+    // and other browser behaviors
+    if (isHorizontalDrag) {
+      e.preventDefault();
+    }
+  });
+
+  $(document).on('mouseup', function(e) {
+    if (!isDragging) return;
+
+    // Calculate distance and time
+    const dragDistanceX = e.pageX - dragStartX;
+    const dragTime = Date.now() - dragStartTime;
+
+    // Calculate velocity (pixels per millisecond)
+    const velocity = Math.abs(dragDistanceX) / dragTime;
+
+    // Adjust threshold based on velocity - faster flicks can be shorter
+    const adjustedThreshold = velocity > 0.5 ? dragThreshold * 0.7 : dragThreshold;
+
+    // If dragged far enough and it's primarily a horizontal drag, change slide
+    if (isHorizontalDrag && Math.abs(dragDistanceX) > adjustedThreshold) {
+      if (dragDistanceX > 0) {
+        // Dragged right - go to previous slide
+        if (currentSlide > 0) {
+          currentSlide--;
+        } else {
+          currentSlide = totalSlides;
+        }
+      } else {
+        // Dragged left - go to next slide
+        if (currentSlide < totalSlides) {
+          currentSlide++;
+        } else {
+          currentSlide = 0;
+        }
+      }
       updateCarousel();
     }
+
+    // Reset drag state
+    isDragging = false;
+    $wrapper.css('cursor', 'grab');
+  });
+
+  // Handle case where mouse leaves the document or window loses focus
+  $(document).on('mouseleave blur', function() {
+    if (isDragging) {
+      isDragging = false;
+      $wrapper.css('cursor', 'grab');
+    }
+  });
+  $carousel.on('keydown', function(e) {
+    // Left arrow key - go to previous slide
+    if (e.keyCode === 37) {
+      if (currentSlide > 0) {
+        currentSlide--;
+      } else {
+        // At the first slide - loop to the last slide
+        currentSlide = totalSlides;
+      }
+      updateCarousel();
+    }
+    // Right arrow key - go to next slide
+    else if (e.keyCode === 39) {
+      if (currentSlide < totalSlides) {
+        currentSlide++;
+      } else {
+        // At the last slide - loop back to the first slide
+        currentSlide = 0;
+      }
+      updateCarousel();
+    }
+  });
+
+  // Handle next button click with circular navigation
+  $nextButton.on('click', function(e) {
+    e.preventDefault(); // Prevent default button behavior
+
+    if (currentSlide < totalSlides) {
+      // Normal case - go to next slide
+      currentSlide++;
+    } else {
+      // At the last slide - loop back to the first slide
+      currentSlide = 0;
+    }
+
+    updateCarousel();
     return false; // Prevent event bubbling
   });
 
-  // Handle prev button click
+  // Handle prev button click with circular navigation
   $prevButton.on('click', function(e) {
     e.preventDefault(); // Prevent default button behavior
+
     if (currentSlide > 0) {
+      // Normal case - go to previous slide
       currentSlide--;
-      updateCarousel();
+    } else {
+      // At the first slide - loop to the last slide
+      currentSlide = totalSlides;
     }
+
+    updateCarousel();
     return false; // Prevent event bubbling
   });
 
@@ -423,13 +556,21 @@ function initCarousel($carousel) {
     }
   });
 
-  // Handle mobile navigation pills click
-  $('.featured-topics-mobile-nav .nav-pill').on('click', function() {
-    const slideIndex = $(this).data('slide');
+  // Handle mobile navigation pills click - use event delegation for better reliability
+  // Since the pills are now direct children of the carousel, delegate from the carousel
+  $carousel.on('click', '.featured-topics-mobile-nav .nav-pill', function(e) {
+    e.preventDefault(); // Prevent any default behavior
+    e.stopPropagation(); // Stop event bubbling
+
+    const slideIndex = parseInt($(this).data('slide'), 10);
+    if (DEBUG) console.log(`Featured Topics: Nav pill clicked for slide ${slideIndex}`);
+
     if (slideIndex >= 0 && slideIndex < $topics.length) {
       currentSlide = slideIndex;
       updateCarousel();
     }
+
+    return false; // Ensure no other handlers are triggered
   });
 
   // Add touch event handlers for mobile swipe
@@ -465,19 +606,99 @@ function initCarousel($carousel) {
     // If the swipe was significant enough
     if (Math.abs(diffX) > threshold) {
       if (diffX > 0) {
-        // Swipe right - go to previous slide
+        // Swipe right - go to previous slide with circular navigation
         if (currentSlide > 0) {
           currentSlide--;
-          updateCarousel();
+        } else {
+          // At the first slide - loop to the last slide
+          currentSlide = totalSlides;
         }
+        updateCarousel();
       } else {
-        // Swipe left - go to next slide
+        // Swipe left - go to next slide with circular navigation
         if (currentSlide < totalSlides) {
           currentSlide++;
-          updateCarousel();
+        } else {
+          // At the last slide - loop back to the first slide
+          currentSlide = 0;
         }
+        updateCarousel();
       }
     }
+  });
+
+  // Add mouse wheel / trackpad horizontal scrolling support - completely redesigned for macOS
+  let isScrolling = false;
+  let scrollTimeout;
+  let scrollDirection = null;
+  let lastScrollTime = 0;
+
+  $wrapper.on('wheel', function(e) {
+    // Always prevent default to avoid page scrolling
+    e.preventDefault();
+
+    // Get current time for throttling
+    const now = Date.now();
+
+    // Throttle events to avoid rapid firing
+    if (now - lastScrollTime < 100) {
+      return false;
+    }
+
+    lastScrollTime = now;
+
+    // Get the delta X (horizontal scroll) and delta Y (vertical scroll)
+    const deltaX = e.originalEvent.deltaX;
+    const deltaY = e.originalEvent.deltaY;
+
+    // Determine scroll direction based on the larger delta
+    // For macOS, we need to consider both deltaX and deltaY
+    let direction = null;
+
+    if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+      // If horizontal scrolling is more significant or there's a clear horizontal intent
+      if (Math.abs(deltaX) > Math.abs(deltaY) * 0.5) {
+        direction = deltaX > 0 ? 'right' : 'left';
+      } else {
+        // For vertical scrolling, treat down as right and up as left
+        direction = deltaY > 0 ? 'right' : 'left';
+      }
+    }
+
+    // If we have a direction and we're not already scrolling
+    if (direction && !isScrolling) {
+      isScrolling = true;
+
+      // Clear any existing timeout
+      clearTimeout(scrollTimeout);
+
+      // Perform the slide change
+      if (direction === 'right') {
+        // Go to next slide with circular navigation
+        if (currentSlide < totalSlides) {
+          currentSlide++;
+        } else {
+          currentSlide = 0;
+        }
+      } else {
+        // Go to previous slide with circular navigation
+        if (currentSlide > 0) {
+          currentSlide--;
+        } else {
+          currentSlide = totalSlides;
+        }
+      }
+
+      // Update the carousel
+      updateCarousel();
+
+      // Set a timeout to allow another scroll after a short delay
+      scrollTimeout = setTimeout(function() {
+        isScrolling = false;
+      }, 500);
+    }
+
+    return false; // Ensure the event doesn't propagate
   });
 
   // Update carousel position
@@ -503,10 +724,18 @@ function initCarousel($carousel) {
       $container.css('transform', `translateX(-${translateX}%)`);
 
       // Update mobile navigation pills - ensure we're targeting the correct pills
-      // First find the mobile nav within the current carousel
+      // Since we moved the mobile nav to be a direct child of the carousel, adjust our selector
       const $mobileNav = $carousel.find('.featured-topics-mobile-nav');
-      $mobileNav.find('.nav-pill').removeClass('active');
-      $mobileNav.find(`.nav-pill[data-slide="${currentSlide}"]`).addClass('active');
+      if ($mobileNav.length) {
+        // First remove active class from all pills
+        $mobileNav.find('.nav-pill').removeClass('active');
+        // Then add active class to the current slide's pill
+        $mobileNav.find(`.nav-pill[data-slide="${currentSlide}"]`).addClass('active');
+
+        if (DEBUG) console.log(`Featured Topics: Updated mobile nav to slide ${currentSlide}`);
+      } else {
+        if (DEBUG) console.log('Featured Topics: Mobile nav not found in carousel');
+      }
     } else {
       // For desktop, calculate the exact position based on card width and gap
       const cardWidth = $topics.first().outerWidth(true);
@@ -524,9 +753,9 @@ function initCarousel($carousel) {
       $container.css('transform', `translateX(-${translateX}%)`);
     }
 
-    // Update button states
-    $prevButton.toggleClass('disabled', currentSlide === 0);
-    $nextButton.toggleClass('disabled', currentSlide === totalSlides);
+    // With circular navigation, buttons are always enabled
+    $prevButton.removeClass('disabled');
+    $nextButton.removeClass('disabled');
 
     // Update pagination dots
     $dots.removeClass('active');
